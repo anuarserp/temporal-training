@@ -1,0 +1,370 @@
+openapi: 3.0.0
+info:
+  title: Training Pets Api
+  description: This is a simple API for pets by serverless alegra training
+  version: 1.0.0
+paths:
+  /login:
+    post:
+      summary: Login
+      description: Login with foundationId
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+              required:
+                - id
+      responses:
+        "200":
+          description: Successful login
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+        "401":
+          description: Unauthorized
+        "404":
+          description: Foundation not found
+  /foundations:
+    post:
+      summary: Create a Foundation
+      description: Create a new foundation
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                phone:
+                  type: object
+                  properties:
+                    extension:
+                      type: string
+                    number:
+                      type: string
+                address:
+                  type: string
+              required:
+                - name
+                - phone
+                - address
+      responses:
+        "200":
+          description: Successful creation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  address:
+                    type: string
+                  id:
+                    type: string
+                  name:
+                    type: string
+                  phone:
+                    type: object
+                    properties:
+                      extension:
+                        type: string
+                      number:
+                        type: string
+  /foundations/{id}:
+    get:
+      summary: Get Foundation by ID
+      description: Returns a foundation based on a single ID
+      parameters:
+        - name: id
+          in: path
+          description: ID of foundation to fetch
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  address:
+                    type: string
+                  id:
+                    type: string
+                  name:
+                    type: string
+                  phone:
+                    type: object
+                    properties:
+                      extension:
+                        type: string
+                      number:
+                        type: string
+        "404":
+          description: Foundation not found
+  /pets/{petId}:
+    get:
+      summary: Get Pet by ID
+      description: Returns a pet based on a single ID
+      parameters:
+        - name: petId
+          in: path
+          description: ID of pet to fetch
+          required: true
+          schema:
+            type: string
+        - name: Authorization
+          in: header
+          required: true
+          description: Authorization header with Bearer
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  age:
+                    type: integer
+                  breed:
+                    type: string
+                  foundationId:
+                    type: string
+                  foundationName:
+                    type: string
+                  id:
+                    type: string
+                  name:
+                    type: string
+                  type:
+                    type: string
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden (when the foundation is not the owner of the pet)
+        "404":
+          description: Pet not found
+    delete:
+      summary: Delete Pet by ID
+      description: Deletes a pet based on a single ID
+      parameters:
+        - name: Authorization
+          in: header
+          required: true
+          description: Authorization header with Bearer
+          schema:
+            type: string
+        - name: petId
+          in: path
+          description: ID of pet to delete
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Successful deletion
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+        "400":
+          description: Pet not found or already deleted
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+  /pets:
+    get:
+      summary: Get Pets
+      description: Returns a list of pets based on the provided filters
+      parameters:
+        - name: Authorization
+          in: header
+          required: true
+          description: Authorization header with Bearer
+          schema:
+            type: string
+        - name: page
+          in: query
+          description: Page number
+          required: false
+          schema:
+            type: integer
+        - name: limit
+          in: query
+          description: Number of items per page
+          required: false
+          schema:
+            type: integer
+        - name: name
+          in: query
+          description: Pet name
+          required: false
+          schema:
+            type: string
+        - name: type
+          in: query
+          description: Pet type
+          required: false
+          schema:
+            type: string
+        - name: breed
+          in: query
+          description: Pet breed
+          required: false
+          schema:
+            type: string
+        - name: age
+          in: query
+          description: Pet age
+          required: false
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        age:
+                          type: integer
+                        breed:
+                          type: string
+                        id:
+                          type: string
+                        name:
+                          type: string
+                        status:
+                          type: string
+                        type:
+                          type: string
+        "422":
+          description: Invalid query parameters
+        "500":
+          description: Internal server error
+    post:
+      summary: Create a Pet
+      description: Create a new pet
+      parameters:
+        - name: Authorization
+          in: header
+          required: true
+          description: Authorization header with Bearer
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                age:
+                  type: integer
+                breed:
+                  type: string
+                name:
+                  type: string
+                type:
+                  type: string
+              required:
+                - age
+                - breed
+                - name
+                - type
+      responses:
+        "200":
+          description: Successful creation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  age:
+                    type: integer
+                  breed:
+                    type: string
+                  foundationId:
+                    type: string
+                  id:
+                    type: string
+                  name:
+                    type: string
+                  status:
+                    type: string
+                  type:
+                    type: string
+        "500":
+          description: Internal server error
+  /pets/{petId}/adopt:
+    post:
+      summary: Adopt a Pet
+      description: Adopt a pet based on a single ID
+      parameters:
+        - name: Authorization
+          in: header
+          required: true
+          description: Authorization header with Bearer
+          schema:
+            type: string
+        - name: petId
+          in: path
+          description: ID of pet to adopt
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Successful adoption
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  adoptionDate:
+                    type: string
+                    format: date-time
+                  foundationId:
+                    type: string
+                  foundationName:
+                    type: string
+                  petId:
+                    type: string
+                  petName:
+                    type: string
+                  status:
+                    type: string
+        "400":
+          description: Pet is not available
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
